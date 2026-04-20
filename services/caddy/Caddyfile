@@ -1,0 +1,36 @@
+{
+	email {$ACME_EMAIL}
+	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+}
+
+proxmox.{$DOMAIN} {
+	reverse_proxy https://{$PROXMOX_HOST} {
+		transport http {
+			tls_insecure_skip_verify
+		}
+	}
+	log {
+		output stdout
+	}
+}
+
+links.{$DOMAIN} {
+	reverse_proxy linkding:9090
+	log {
+		output stdout
+	}
+}
+
+rss.{$DOMAIN} {
+	reverse_proxy freshrss:80
+	log {
+		output stdout
+	}
+}
+
+watch.{$DOMAIN} {
+	reverse_proxy changedetection:5000
+	log {
+		output stdout
+	}
+}

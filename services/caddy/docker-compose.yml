@@ -1,0 +1,35 @@
+services:
+  caddy:
+    build:
+      context: .
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN}
+      ACME_EMAIL: ${ACME_EMAIL}
+      DOMAIN: ${DOMAIN}
+      PROXMOX_HOST: ${PROXMOX_HOST}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - proxy_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  proxy_net:
+    external: true
+
+volumes:
+  caddy_data:
+  caddy_config:
