@@ -1,0 +1,36 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.crt
+id_rsa*
+id_ed25519*
+credentials.json
+secrets.yml
+secrets.yaml
+
+# Runtime / user data
+**/data/
+**/volumes/
+**/freshrss_data/
+**/freshrss_extensions/
+*.db
+*.sqlite
+*.sqlite3
+
+# Ansible
+*.retry
+ansible/vault-password*
+
+# Docker
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
