@@ -9,9 +9,11 @@ development setup, one service per pull request.
 
 ## Structure
 
+```
 services/
 ├── caddy/ reverse proxy, TLS termination (ACME DNS-01 via Cloudflare)
 └── <service>/ one folder per service, each with its own README
+```
 
 Each service folder is a self-contained Docker Compose project
 with its own `README.md`, `docker-compose.yml`, and `.env.example`.
