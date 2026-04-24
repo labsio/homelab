@@ -20,12 +20,13 @@ reach them.
 
 ## Services
 
-| Service         | Subdomain           | Purpose                   | Status   |
-| --------------- | ------------------- | ------------------------- | -------- |
-| caddy           | —                   | Reverse proxy + TLS       | migrated |
-| freshrss        | `rss.${DOMAIN}`     | RSS aggregator            | planned  |
-| changedetection | `watch.${DOMAIN}`   | Website change monitoring | planned  |
-| proxmox         | `proxmox.${DOMAIN}` | Hypervisor UI (proxied)   | migrated |
+| Service         | Subdomain           | Purpose                     | Status   |
+| --------------- | ------------------- | --------------------------- | -------- |
+| caddy           | —                   | Reverse proxy + TLS         | migrated |
+| freshrss        | `rss.${DOMAIN}`     | RSS aggregator              | migrated |
+| rss-bridge      | — (internal)        | Feed generator for freshrss | migrated |
+| changedetection | `watch.${DOMAIN}`   | Website change monitoring   | planned  |
+| proxmox         | `proxmox.${DOMAIN}` | Hypervisor UI (proxied)     | migrated |
 
 ## Prerequisites
 
