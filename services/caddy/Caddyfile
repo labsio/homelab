@@ -14,13 +14,6 @@ proxmox.{$DOMAIN} {
 	}
 }
 
-links.{$DOMAIN} {
-	reverse_proxy linkding:9090
-	log {
-		output stdout
-	}
-}
-
 rss.{$DOMAIN} {
 	reverse_proxy freshrss:80
 	log {

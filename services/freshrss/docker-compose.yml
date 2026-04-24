@@ -1,0 +1,56 @@
+services:
+  rss-bridge:
+    image: rssbridge/rss-bridge:latest
+    container_name: rss-bridge
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-UTC}
+    networks:
+      - rss_net
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "1.0"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  freshrss:
+    image: freshrss/freshrss:latest
+    container_name: freshrss
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-UTC}
+      CRON_MIN: ${CRON_MIN:-*/15}
+      TRUSTED_PROXY: ${TRUSTED_PROXY:-172.16.0.0/12}
+    volumes:
+      - freshrss_data:/var/www/FreshRSS/data
+      - freshrss_extensions:/var/www/FreshRSS/extensions
+    depends_on:
+      - rss-bridge
+    networks:
+      - proxy_net
+      - rss_net
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  proxy_net:
+    external: true
+  rss_net:
+    driver: bridge
+
+volumes:
+  freshrss_data:
+  freshrss_extensions:
