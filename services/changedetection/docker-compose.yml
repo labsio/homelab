@@ -1,0 +1,57 @@
+services:
+  changedetection:
+    image: ghcr.io/dgtlmoon/changedetection.io:0.54.10
+    container_name: changedetection
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-UTC}
+      BASE_URL: ${BASE_URL:-}
+      PLAYWRIGHT_DRIVER_URL: ws://playwright-chrome:3000
+    volumes:
+      - changedetection_data:/datastore
+    depends_on:
+      playwright-chrome:
+        condition: service_started
+    networks:
+      - proxy_net
+      - changedetection_net
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  playwright-chrome:
+    image: dgtlmoon/sockpuppetbrowser:latest
+    container_name: playwright-chrome
+    restart: unless-stopped
+    environment:
+      SCREEN_WIDTH: 1920
+      SCREEN_HEIGHT: 1080
+      MAX_CONCURRENT_CHROME_PROCESSES: 5
+    networks:
+      - changedetection_net
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  proxy_net:
+    external: true
+  changedetection_net:
+    driver: bridge
+
+volumes:
+  changedetection_data:
