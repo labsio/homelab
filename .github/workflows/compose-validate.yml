@@ -1,0 +1,28 @@
+name: Validate Docker Compose files
+
+on:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service:
+          - caddy
+          - freshrss
+          - changedetection
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Copy .env.example → .env for ${{ matrix.service }}
+        run: |
+          cp services/${{ matrix.service }}/.env.example \
+             services/${{ matrix.service }}/.env
+
+      - name: Validate services/${{ matrix.service }}/docker-compose.yml
+        working-directory: services/${{ matrix.service }}
+        run: docker compose config --quiet
