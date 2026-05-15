@@ -11,11 +11,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install yamllint
+        run: pip install yamllint --quiet
+
       - name: Run yamllint
-        uses: ibiqlik/action-yamllint@v3
-        with:
-          config_data: |
-            extends: relaxed
-            rules:
-              line-length:
-                max: 120
+        run: yamllint -d relaxed .
