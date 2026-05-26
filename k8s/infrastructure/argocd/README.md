@@ -1,6 +1,6 @@
 # Argo CD
 
-GitOps controller. Bootstrapped via Helm, exposed at `argocd.k8s.${DOMAIN}`.
+GitOps controller. Bootstrapped via Helm, exposed at `argocd.k8s.thelabdesk.com`.
 
 ## Install
 
@@ -14,8 +14,6 @@ helm install argocd argo/argo-cd \
 ```
 
 ## Apply ingress and certificate
-
-Replace `${DOMAIN}` in `certificate.yaml` and `ingress.yaml`, then:
 
 ```bash
 kubectl apply -k .

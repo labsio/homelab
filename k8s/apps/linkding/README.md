@@ -4,8 +4,6 @@ Self-hosted bookmark manager — https://github.com/sissbruecker/linkding
 
 ## Apply
 
-Replace `${DOMAIN}` in `certificate.yaml` and `ingress.yaml`, then:
-
 ```bash
 kubectl apply -k .
 ```

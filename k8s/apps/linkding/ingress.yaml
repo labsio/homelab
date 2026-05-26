@@ -7,10 +7,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - linkding.k8s.${DOMAIN}
+        - linkding.k8s.thelabdesk.com
       secretName: wildcard-k8s-tls
   rules:
-    - host: linkding.k8s.${DOMAIN}
+    - host: linkding.k8s.thelabdesk.com
       http:
         paths:
           - path: /

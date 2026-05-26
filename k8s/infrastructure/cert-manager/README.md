@@ -25,8 +25,6 @@ kubectl create secret generic cloudflare-api-token \
 
 ## Apply
 
-Replace `${EMAIL}` in `cluster-issuer.yaml`, then:
-
 ```bash
 kubectl apply -f cluster-issuer.yaml
 ```
