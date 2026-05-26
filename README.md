@@ -1,61 +1,69 @@
 # homelab
 
-Self-hosted services for personal use, running on Proxmox.
-Services are containerised with Docker Compose and published
-through a single Caddy reverse proxy with automatic HTTPS.
+Self-hosted infrastructure for personal use, running on a Proxmox host.
 
-Public repository — migrated iteratively from a private
-development setup, one service per pull request.
+A place to host my own services and to sharpen my skills by trying
+out new tools and patterns — Kubernetes, GitOps, Infra-as-Code. The
+end goal is a one-command bring-up of the entire stack on fresh
+hardware.
+
+## Where this is going
+
+The main platform is **k3s** — declarative state, self-healing, GitOps
+with Argo CD, TLS via cert-manager and Let's Encrypt DNS-01. Services
+that are currently on Docker will move there over time.
+
+**Docker Compose** stays as a simpler alternative for anyone who wants
+to clone a minimal version of this homelab without standing up a
+Kubernetes cluster.
 
 ## Structure
 
 ```
-services/
-├── caddy/ reverse proxy, TLS termination (ACME DNS-01 via Cloudflare)
-└── <service>/ one folder per service, each with its own README
+services/         Docker Compose services, one folder each
+├── caddy/        reverse proxy, TLS termination
+└── <service>/    self-contained — README, compose file, .env.example
+
+k8s/              Kubernetes manifests
+├── infrastructure/  cert-manager, argocd (bootstrap layer)
+├── apps/            applications managed by Argo CD
+└── argocd-apps/     Argo CD Application resources (app-of-apps)
 ```
 
-Each service folder is a self-contained Docker Compose project
-with its own `README.md`, `docker-compose.yml`, and `.env.example`.
-They share an external Docker network `proxy_net` so Caddy can
-reach them.
+Each subdirectory has its own README with setup instructions.
 
 ## Services
 
-| Service         | Subdomain           | Purpose                     |
-| --------------- | ------------------- | --------------------------- |
-| caddy           | —                   | Reverse proxy + TLS         |
-| freshrss        | `rss.${DOMAIN}`     | RSS aggregator              |
-| rss-bridge      | — (internal)        | Feed generator for freshrss |
-| changedetection | `watch.${DOMAIN}`   | Website change monitoring   |
-| proxmox         | `proxmox.${DOMAIN}` | Hypervisor UI (proxied)     |
+| Service         | Subdomain                | Platform       | Purpose                     |
+| --------------- | ------------------------ | -------------- | --------------------------- |
+| caddy           | —                        | Docker         | Reverse proxy + TLS         |
+| freshrss        | `rss.${DOMAIN}`          | Docker         | RSS aggregator              |
+| rss-bridge      | — (internal)             | Docker         | Feed generator for freshrss |
+| changedetection | `watch.${DOMAIN}`        | Docker         | Website change monitoring   |
+| proxmox         | `proxmox.${DOMAIN}`      | Docker (proxy) | Hypervisor UI               |
+| linkding        | `linkding.k8s.${DOMAIN}` | k3s            | Bookmark manager            |
 
 ## Prerequisites
 
-- Docker + Docker Compose on the host
-- External Docker network: `docker network create proxy_net`
-- A domain with DNS managed by Cloudflare (for ACME DNS-01)
-- DNS records for each service subdomain pointing at the host
+A full walkthrough will live on my blog, together with Ansible playbooks
+and helper scripts to make setup as quick as possible. None of that
+exists yet — it's part of the roadmap below.
 
-## Bringing up a service
+For now, the basics:
 
-Each service is independent:
+- A Proxmox host (or any Linux host for Docker; a VM for k3s)
+- A domain with DNS managed by Cloudflare
+- Docker + Docker Compose for the Docker stack
+- k3s for the Kubernetes stack
 
-```bash
-cd services/<name>
-cp .env.example .env
-# edit .env with real values
-docker compose up -d
-```
+## What's next
 
-Start `caddy` first — it is the reverse proxy for everything else.
-
-## Roadmap
-
-- [ ] Ansible playbooks for host bootstrap (Docker, network, firewall)
-- [ ] GitHub Actions for Compose / Caddyfile validation on PR
-- [ ] Centralised backups of named volumes
-- [ ] Monitoring stack (Prometheus + Grafana)
+- Migrate freshrss and changedetection from Docker to k3s
+- Monitoring stack on k3s (Prometheus + Grafana)
+- Terraform for Cloudflare DNS (managed alongside the manifests)
+- Ansible playbooks for host bootstrap — single command to install
+  k3s and base configuration on a fresh Proxmox VM
+- Harden the Docker stack as a clean reference for simpler self-hosting
 
 ## License
 
