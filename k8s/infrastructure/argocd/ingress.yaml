@@ -7,10 +7,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - argocd.k8s.${DOMAIN}
+        - argocd.k8s.thelabdesk.com
       secretName: wildcard-k8s-tls
   rules:
-    - host: argocd.k8s.${DOMAIN}
+    - host: argocd.k8s.thelabdesk.com
       http:
         paths:
           - path: /

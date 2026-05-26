@@ -8,7 +8,7 @@ spec:
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
-  commonName: "*.k8s.${DOMAIN}"
+  commonName: "*.k8s.thelabdesk.com"
   dnsNames:
-    - "*.k8s.${DOMAIN}"
-    - "k8s.${DOMAIN}"
+    - "*.k8s.thelabdesk.com"
+    - "k8s.thelabdesk.com"
