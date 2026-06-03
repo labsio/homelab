@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+spec:
+  project: default
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /status/terminatingReplicas
+    - group: apps
+      kind: StatefulSet
+      jsonPointers:
+        - /status/terminatingReplicas
+  sources:
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      targetRevision: 85.3.3
+      helm:
+        releaseName: kube-prometheus-stack
+        valueFiles:
+          - $values/k8s/monitoring/kube-prometheus-stack/values.yaml
+    - repoURL: https://github.com/labsio/homelab.git
+      targetRevision: HEAD
+      path: k8s/monitoring/kube-prometheus-stack
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  # No automated sync — manual sync only (deploy when ready, see C2 decision).
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

@@ -1,0 +1,129 @@
+defaultRules:
+  create: true
+
+# === Prometheus ===
+prometheus:
+  prometheusSpec:
+    retention: 7d
+    resources:
+      requests:
+        memory: 500Mi
+        cpu: 100m
+      limits:
+        memory: 1500Mi
+        cpu: 500m
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-path
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+    # Discover ServiceMonitors/PodMonitors/Rules in all namespaces, not just
+    # those labelled with this release name.
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+
+# === Grafana ===
+grafana:
+  persistence:
+    enabled: true
+    storageClassName: local-path
+    size: 1Gi
+  adminPassword: "admin"
+  serviceMonitor:
+    enabled: true
+  # On k3s + local-path the init chown fails with Permission denied; the modern
+  # Grafana image already starts with the correct fsGroup, so it is unnecessary.
+  initChownData:
+    enabled: false
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+  # isDefault: false keeps Prometheus as the default datasource.
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      uid: loki
+      url: http://loki:3100
+      access: proxy
+      isDefault: false
+
+# === AlertManager ===
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-path
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 10m
+      limits:
+        memory: 128Mi
+        cpu: 100m
+    secrets:
+      - telegram-bot-token
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by: ["alertname"]
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+      receiver: "telegram"
+      routes:
+        - receiver: "telegram"
+          matchers:
+            - severity =~ "warning|critical"
+    receivers:
+      - name: "telegram"
+        telegram_configs:
+          # Token mounted from the telegram-bot-token Secret; chat_id is set per
+          # cluster and is a placeholder here.
+          - bot_token_file: /etc/alertmanager/secrets/telegram-bot-token/token
+            chat_id: -1001234567890
+            parse_mode: HTML
+            send_resolved: true
+            message: |
+              {{ range .Alerts }}
+              <b>{{ .Labels.alertname }}</b>
+              Severity: {{ .Labels.severity }}
+              {{ .Annotations.summary }}
+              {{ .Annotations.description }}
+              {{ end }}
+
+# === Exporters ===
+nodeExporter:
+  enabled: true
+kubeStateMetrics:
+  enabled: true
+
+# === k3s control-plane targets ===
+# k3s bundles the control plane into a single process, so these scrape targets
+# do not exist; leaving them enabled produces permanent false "down" alerts.
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+kubeEtcd:
+  enabled: false
+
+# We manage Ingress separately via the cert-manager pattern (see ingress.yaml).
+ingress:
+  enabled: false
