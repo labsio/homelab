@@ -52,7 +52,7 @@ This pattern keeps upstream charts pristine while versioning all customization i
 
 ## Access
 
-- Grafana: `https://grafana.<domain>` (TLS via cert-manager + Let's Encrypt wildcard)
+- Grafana: `https://grafana.k8s.thelabdesk.com` (TLS via cert-manager + Let's Encrypt wildcard)
 
 ## Alerts
 
