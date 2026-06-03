@@ -27,6 +27,7 @@ services/         Docker Compose services, one folder each
 k8s/              Kubernetes manifests
 ├── infrastructure/  cert-manager, argocd (bootstrap layer)
 ├── apps/            applications managed by Argo CD
+├── monitoring/      Prometheus, Grafana, Loki, AlertManager
 └── argocd-apps/     Argo CD Application resources (app-of-apps)
 ```
 
@@ -42,6 +43,15 @@ Each subdirectory has its own README with setup instructions.
 | changedetection | `watch.${DOMAIN}`        | Docker         | Website change monitoring   |
 | proxmox         | `proxmox.${DOMAIN}`      | Docker (proxy) | Hypervisor UI               |
 | linkding        | `linkding.k8s.${DOMAIN}` | k3s            | Bookmark manager            |
+| grafana         | `grafana.k8s.${DOMAIN}`  | k3s            | Monitoring dashboards       |
+
+## Monitoring
+
+A full observability stack runs on k3s — Prometheus for metrics, Loki
+for logs, Grafana for dashboards, and AlertManager routing alerts to
+Telegram. Deployed via Argo CD multi-source Applications. See
+[k8s/monitoring](k8s/monitoring/kube-prometheus-stack/README.md) for
+architecture, screenshots, and notes.
 
 ## Prerequisites
 
@@ -58,11 +68,11 @@ For now, the basics:
 
 ## What's next
 
-- Migrate freshrss and changedetection from Docker to k3s
-- Monitoring stack on k3s (Prometheus + Grafana)
+- Azure Key Vault + External Secrets Operator for secret management
 - Terraform for Cloudflare DNS (managed alongside the manifests)
 - Ansible playbooks for host bootstrap — single command to install
   k3s and base configuration on a fresh Proxmox VM
+- Migrate freshrss and changedetection from Docker to k3s
 - Harden the Docker stack as a clean reference for simpler self-hosting
 
 ## License
