@@ -27,7 +27,7 @@ services:
         max-file: "3"
 
   playwright-chrome:
-    image: dgtlmoon/sockpuppetbrowser:latest
+    image: dgtlmoon/sockpuppetbrowser:0.0.3
     container_name: playwright-chrome
     restart: unless-stopped
     environment:

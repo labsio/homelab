@@ -33,7 +33,12 @@ grafana:
     enabled: true
     storageClassName: local-path
     size: 1Gi
-  adminPassword: "admin"
+  # Admin credentials pulled from a Secret created out-of-band (see README);
+  # never committed to git.
+  admin:
+    existingSecret: grafana-admin
+    userKey: admin-user
+    passwordKey: admin-password
   serviceMonitor:
     enabled: true
   # On k3s + local-path the init chown fails with Permission denied; the modern

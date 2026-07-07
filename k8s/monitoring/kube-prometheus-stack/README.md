@@ -50,6 +50,25 @@ Loki is deployed as a separate Application using the `loki-stack` chart.
 
 This pattern keeps upstream charts pristine while versioning all customization in git.
 
+## Secrets
+
+Two Secrets are created **out-of-band** and never committed to git:
+
+```bash
+# Grafana admin login
+kubectl create secret generic grafana-admin \
+  --namespace monitoring \
+  --from-literal=admin-user=admin \
+  --from-literal=admin-password='<a-strong-password>'
+
+# Telegram bot token for AlertManager
+kubectl create secret generic telegram-bot-token \
+  --namespace monitoring \
+  --from-literal=token='<bot-token>'
+```
+
+Migrating these to External Secrets Operator + Azure Key Vault is on the roadmap.
+
 ## Access
 
 - Grafana: `https://grafana.k8s.thelabdesk.com` (TLS via cert-manager + Let's Encrypt wildcard)

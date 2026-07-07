@@ -17,17 +17,41 @@ spec:
     spec:
       containers:
         - name: linkding
-          image: sissbruecker/linkding:latest
+          image: sissbruecker/linkding:1.45.0
           ports:
             - containerPort: 9090
           env:
             - name: LD_SUPERUSER_NAME
               value: admin
+            # Password pulled from a Secret created out-of-band (see README);
+            # never committed to git.
             - name: LD_SUPERUSER_PASSWORD
-              value: changeme
+              valueFrom:
+                secretKeyRef:
+                  name: linkding-credentials
+                  key: superuser-password
           volumeMounts:
             - name: data
               mountPath: /etc/linkding/data
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9090
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
           resources:
             requests:
               cpu: 50m

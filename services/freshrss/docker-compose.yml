@@ -1,6 +1,7 @@
 services:
   rss-bridge:
-    image: rssbridge/rss-bridge:latest
+    # rss-bridge ships rolling builds tagged by commit, not semver; pin the sha.
+    image: rssbridge/rss-bridge:sha-68539df
     container_name: rss-bridge
     restart: unless-stopped
     environment:
@@ -19,7 +20,7 @@ services:
         max-file: "3"
 
   freshrss:
-    image: freshrss/freshrss:latest
+    image: freshrss/freshrss:1.29.1
     container_name: freshrss
     restart: unless-stopped
     environment:
