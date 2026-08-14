@@ -17,7 +17,7 @@ done in on the new hardware. Status: `todo` / `wip` / `done`.
 | # | Step | Why | Effort | Status |
 | - | ---- | --- | ------ | ------ |
 | 1 | Host base: minimal OS, `unattended-upgrades`, SSH key-only, no root login | The floor everything else stands on; kernel/runtime CVEs get patched without waiting for a free weekend | S | done |
-| 2 | Tailscale as the *only* way in; nothing forwarded on the router | Removes the whole internet-facing attack surface before a single service exists — the greenfield form of the "Access model" group | S | todo |
+| 2 | Tailscale for remote access; nothing forwarded on the router (LAN kept as a trusted second path) | Removes the whole internet-facing attack surface before a single service exists — the greenfield form of the "Access model" group | S | done |
 | 3 | Pick secrets-as-code up front (SOPS + age) and keep a secret inventory as secrets are created | On a clean start, secrets can be encrypted-in-git from commit one instead of migrated later | M | todo |
 | 4 | k3s + cert-manager + one Argo CD root `Application`; DNS-01 certs, hostnames resolve to Tailscale addresses | The single-owner GitOps foundation; DNS-01 still issues certs with no inbound ports | M | todo |
 | 5 | `restic` local backups wired up *before* apps hold real data | The tooling and habit must exist before there is anything worth losing | M | todo |
