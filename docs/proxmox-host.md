@@ -166,15 +166,40 @@ In the web UI: **Datacenter → Permissions → Two Factor → Add → TOTP**, s
 QR with an authenticator app, confirm a code. If the authenticator is ever lost,
 clear it from the console: `pveum user tfa delete root@pam`.
 
+## 4. Remote access — Tailscale
+
+Tailscale gives access from anywhere without forwarding any port on the router — it
+connects out to your tailnet. Install and bring it up on the host:
+
+```bash
+curl -fsSL https://pkgs.tailscale.com/stable/debian/trixie.noarmor.gpg \
+  -o /usr/share/keyrings/tailscale-archive-keyring.gpg
+curl -fsSL https://pkgs.tailscale.com/stable/debian/trixie.tailscale-keyring.list \
+  -o /etc/apt/sources.list.d/tailscale.list
+apt update && apt install -y tailscale
+tailscale up --hostname=pve      # open the printed URL to authenticate the node
+```
+
+Then allow management over the tailnet in the firewall, keeping the LAN rules:
+
+```
+# add to [RULES] in /etc/pve/firewall/cluster.fw
+IN ACCEPT -source 100.64.0.0/10 -p tcp -dport 22 -log nolog
+IN ACCEPT -source 100.64.0.0/10 -p tcp -dport 8006 -log nolog
+IN ACCEPT -source 100.64.0.0/10 -p icmp -log nolog
+```
+
+The host now answers on its tailnet address (`tailscale ip -4`). Proxmox always keeps the
+local subnet in its built-in `management` IPSet, so the LAN stays reachable too — fine on a
+trusted network, and not worth fighting the platform to force tunnel-only.
+
 ## Security posture
 
-- **No inbound port-forwarding on the router.** The web UI and SSH stay on the
-  LAN. Remote access goes through **Tailscale** (ROADMAP step 2) — `8006`/`22`
-  are never exposed to the internet.
+- **No inbound port-forwarding on the router.** Management (`8006`/`22`) is reachable from
+  the LAN and over Tailscale, never from the internet.
 - `root@pam` is protected by a key (SSH) and TOTP (web UI); the console is the
   break-glass fallback.
 
 ## Next
 
-- Tailscale as the only remote entry point (ROADMAP step 2).
-- Then create the k3s VM that hosts the cluster.
+- Create the k3s VM that hosts the cluster.
