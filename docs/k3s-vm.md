@@ -12,7 +12,7 @@ Download the Ubuntu 24.04 cloud image once, then build a cloud-init VM — 4 vCP
 IMG=/var/lib/vz/template/iso/noble-server-cloudimg-amd64.img
 wget -qO "$IMG" https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
 
-qm create 100 --name k8s-cp-1 --memory 8192 --cores 4 --cpu host \
+qm create 100 --name k8s-cp-1 --memory 8192 --cores 4 --cpu host --onboot 1 \
   --net0 virtio,bridge=vmbr0 --scsihw virtio-scsi-single --ostype l26 --agent enabled=1
 qm set 100 --scsi0 local-lvm:0,import-from="$IMG"
 qm set 100 --ide2 local-lvm:cloudinit
