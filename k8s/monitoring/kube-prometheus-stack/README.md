@@ -113,6 +113,16 @@ Real troubleshooting encountered while building this stack:
 - **ArgoCD + bleeding-edge Kubernetes.** k8s 1.35 introduced a `.status.terminatingReplicas` field that older ArgoCD schemas don't recognize, breaking structured-merge diff. Resolved declaratively with `ignoreDifferences` on that status field.
 - **Deprecated chart handling.** The `loki-stack` chart (deprecated) auto-provisions a Grafana datasource as default, conflicting with Prometheus. Resolved by disabling the chart's datasource provisioning and declaring Loki explicitly with `isDefault: false`.
 - **GitOps over UI.** Adding a datasource through the Grafana UI broke pod startup on restart (duplicate default). All configuration belongs in git, not click-ops.
+- **Large CRDs vs client-side apply.** The chart's CRDs exceed the 256 KB annotation limit, so the first Argo sync fails with `metadata.annotations: Too long`. Even with `ServerSideApply=true` the big ones (`prometheuses`, `alertmanagers`, `scrapeconfigs`, `thanosrulers`, `alertmanagerconfigs`, `prometheusagents`) don't install. Fix: apply the operator CRDs once with server-side apply, then re-sync:
+  ```bash
+  VER=$(kubectl -n monitoring get deploy kube-prometheus-stack-operator \
+    -o jsonpath='{.spec.template.spec.containers[0].image}' | sed 's/.*://')
+  base=https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/$VER/example/prometheus-operator-crd
+  for c in alertmanagerconfigs alertmanagers prometheusagents prometheuses scrapeconfigs thanosrulers; do
+    kubectl apply --server-side --force-conflicts -f $base/monitoring.coreos.com_$c.yaml
+  done
+  ```
+- **Restart the operator after the CRDs land.** The operator builds its informers at startup, so if it came up before those CRDs existed it never reconciles the `Prometheus`/`Alertmanager` CRs (no statefulset appears). `kubectl -n monitoring rollout restart deploy kube-prometheus-stack-operator` and the pods show up.
 
 ## Backlog
 
