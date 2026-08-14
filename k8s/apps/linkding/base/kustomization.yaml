@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Namespace-agnostic building blocks. Each overlay sets the namespace and adds
+# its own Namespace, Certificate and Ingress (host differs per environment).
+resources:
+  - pvc.yaml
+  - deployment.yaml
+  - service.yaml

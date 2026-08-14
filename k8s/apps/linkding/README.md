@@ -15,10 +15,21 @@ kubectl create secret generic linkding-credentials \
 
 Migrating this to External Secrets Operator + Azure Key Vault is on the roadmap.
 
-## Apply
+## Layout
+
+`base/` holds the namespace-agnostic manifests; each overlay sets the namespace
+and its own hostname:
+
+- `overlays/prod/` — `linkding.k8s.thelabdesk.com`, namespace `linkding`. Argo CD
+  syncs this path from `main`; you don't apply it by hand.
+- `overlays/test/` — `linkding-test.k8s.thelabdesk.com`, namespace `linkding-test`.
+  For validation on a throwaway k3d cluster or a test namespace.
+
+## Validate / apply
 
 ```bash
-kubectl apply -k .
+kubectl kustomize k8s/apps/linkding/overlays/prod   # render, no cluster needed
+kubectl apply -k k8s/apps/linkding/overlays/test    # e.g. on a k3d cluster
 ```
 
 ## Storage
