@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Validation target: `kubectl apply -k .` on a throwaway k3d cluster, or a
+# linkding-test namespace on the real cluster. Same base as prod; only the
+# namespace and hostname differ. Add a `patches:` block here to make test
+# diverge further (smaller resources, feature flags, etc.).
+namespace: linkding-test
+
+resources:
+  - ../../base
+  - namespace.yaml
+  - certificate.yaml
+  - ingress.yaml
