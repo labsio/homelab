@@ -1,7 +1,6 @@
 # Setup docs
 
-How to bring this homelab up from scratch, in order. This mirrors the
-*Bring-up order* in [ROADMAP.md](../ROADMAP.md) — each guide is a linear,
+How to bring this homelab up from scratch, in order — each guide is a linear,
 copy-pasteable walkthrough of one stage.
 
 | # | Guide | What it covers |

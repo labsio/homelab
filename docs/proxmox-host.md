@@ -1,7 +1,6 @@
 # Proxmox host setup
 
-Step 1 of bringing up the homelab (see the *Bring-up order* in
-[ROADMAP.md](../ROADMAP.md)). It turns a spare machine into the Proxmox VE
+Step 1 of bringing up the homelab. It turns a spare machine into the Proxmox VE
 hypervisor and hardens it **before** anything else runs on it.
 
 Reference host: an old laptop — single disk, wired Ethernet, 32 GB RAM,

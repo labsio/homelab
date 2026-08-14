@@ -23,7 +23,7 @@ k8s/
   there — nothing is applied by hand again.
 - **base/overlays per app.** Each app keeps a single source of truth in `base/`; overlays
   set the namespace and hostname. The `test` overlay is validated on a disposable `k3d`
-  cluster before prod (see [../ROADMAP.md](../ROADMAP.md)), and `overlays/prod` is the path
+  cluster before prod, and `overlays/prod` is the path
   Argo CD syncs from `main`. This is why there is one copy of each manifest, not two repos.
 - **Monitoring is multi-source, not overlays.** It composes an upstream Helm chart (pinned,
   from its own repo) with `$values` and extra manifests from this repo, so the upstream
