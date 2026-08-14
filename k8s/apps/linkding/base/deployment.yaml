@@ -14,6 +14,8 @@ spec:
       labels:
         app: linkding
     spec:
+      securityContext:
+        fsGroup: 33
       containers:
         - name: linkding
           image: sissbruecker/linkding:1.45.0
@@ -45,6 +47,11 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 10
           securityContext:
+            # Run as www-data (33) so uWSGI's setgid(33) is a no-op; with the
+            # container starting as root and all caps dropped, setgid/chown fail.
+            runAsNonRoot: true
+            runAsUser: 33
+            runAsGroup: 33
             allowPrivilegeEscalation: false
             capabilities:
               drop:
