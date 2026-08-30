@@ -13,7 +13,8 @@ kubectl create secret generic linkding-credentials \
   --from-literal=superuser-password='<a-strong-password>'
 ```
 
-Migrating this to External Secrets Operator + Azure Key Vault is on the roadmap.
+Migrating this to a SOPS-encrypted `linkding-credentials.enc.yaml` is on the
+roadmap — see [../../../docs/secrets.md](../../../docs/secrets.md).
 
 ## Layout
 

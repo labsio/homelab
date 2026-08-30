@@ -67,7 +67,8 @@ kubectl create secret generic telegram-bot-token \
   --from-literal=token='<bot-token>'
 ```
 
-Migrating these to External Secrets Operator + Azure Key Vault is on the roadmap.
+Migrating these to SOPS-encrypted `*.enc.yaml` Secrets is on the roadmap — see
+[../../../docs/secrets.md](../../../docs/secrets.md).
 
 ## Access
 

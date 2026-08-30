@@ -68,7 +68,7 @@ For now, the basics:
 
 ## What's next
 
-- Azure Key Vault + External Secrets Operator for secret management
+- SOPS + age for secret management — see [docs/secrets.md](docs/secrets.md)
 - Terraform for Cloudflare DNS (managed alongside the manifests)
 - Ansible playbooks for host bootstrap — single command to install
   k3s and base configuration on a fresh Proxmox VM

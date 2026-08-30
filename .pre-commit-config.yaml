@@ -32,3 +32,13 @@ repos:
     hooks:
       - id: yamllint
         args: ["-d", "relaxed"]
+
+  # Belt-and-suspenders for the *.enc.yaml naming convention: catches a secret file
+  # that was named like it's encrypted but got committed as plaintext by mistake.
+  - repo: local
+    hooks:
+      - id: sops-encrypted
+        name: verify *.enc.yaml files are actually SOPS-encrypted
+        language: system
+        entry: scripts/check-sops-encrypted.sh
+        files: \.enc\.ya?ml$

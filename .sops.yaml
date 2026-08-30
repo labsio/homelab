@@ -1,0 +1,12 @@
+# SOPS encryption rules. See docs/secrets.md for the full model.
+#
+# Only files named *.enc.yaml / *.enc.yml are ever encrypted — the naming makes it visually
+# obvious in a diff or a directory listing which files hold ciphertext.
+#
+# encrypted_regex limits SOPS to the actual secret values, not the whole file: a Kubernetes
+# Secret's `apiVersion`, `kind`, `metadata` (including its name) stay in plaintext so the
+# manifest is still readable and diffable in PRs; only `data`/`stringData` get encrypted.
+creation_rules:
+  - path_regex: .*\.enc\.ya?ml$
+    encrypted_regex: ^(data|stringData)$
+    age: age1meh4lt07w8kfekmu3jk7qefwru00446rxa4f0v8le5nv3ql82g2qdu6zcv
