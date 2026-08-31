@@ -42,7 +42,6 @@ Each subdirectory has its own README with setup instructions.
 | rss-bridge      | — (internal)             | Docker         | Feed generator for freshrss |
 | changedetection | `watch.${DOMAIN}`        | Docker         | Website change monitoring   |
 | proxmox         | `proxmox.${DOMAIN}`      | Docker (proxy) | Hypervisor UI               |
-| linkding        | `linkding.k8s.${DOMAIN}` | k3s            | Bookmark manager            |
 | grafana         | `grafana.k8s.${DOMAIN}`  | k3s            | Monitoring dashboards       |
 
 ## Monitoring
