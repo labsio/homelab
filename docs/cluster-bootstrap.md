@@ -41,8 +41,8 @@ kubectl -n argocd get applications
 ```
 
 The root Application (auto-sync, prune, self-heal) now owns everything in
-`k8s/argocd-apps/`. `linkding` syncs automatically; the monitoring Applications are
-manual-sync on purpose — sync them from the Argo CD UI when ready.
+`k8s/argocd-apps/`. The monitoring Applications are manual-sync on purpose — sync
+them from the Argo CD UI when ready.
 
 ## Per-app secrets
 
@@ -52,7 +52,6 @@ Apps read secrets created out of band, never committed. Each app's README has th
 | Secret | Namespace | For |
 | ------ | --------- | --- |
 | `cloudflare-api-token` | `cert-manager` | DNS-01 challenges |
-| `linkding-credentials` | `linkding` | linkding superuser password |
 | `grafana-admin` | `monitoring` | Grafana admin login |
 | `telegram-bot-token` | `monitoring` | AlertManager → Telegram |
 
