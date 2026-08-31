@@ -12,7 +12,6 @@ jobs:
         service:
           - caddy
           - freshrss
-          - changedetection
 
     steps:
       - name: Checkout

@@ -20,10 +20,3 @@ rss.{$DOMAIN} {
 		output stdout
 	}
 }
-
-watch.{$DOMAIN} {
-	reverse_proxy changedetection:5000
-	log {
-		output stdout
-	}
-}
