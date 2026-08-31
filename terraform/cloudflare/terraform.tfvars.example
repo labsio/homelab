@@ -1,0 +1,4 @@
+# Copy this file to terraform.tfvars and fill in the real value.
+# terraform.tfvars is gitignored — never commit it.
+
+cloudflare_zone_id = "your-cloudflare-zone-id-here"

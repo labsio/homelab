@@ -102,6 +102,17 @@ Each service is a self-contained folder: `README.md`, `docker-compose.yml`,
 - Adding a service means also adding it to the `matrix.service` list in
   `.github/workflows/compose-validate.yml`, or CI silently never validates it.
 
+## terraform/ — infra-as-code outside the cluster
+
+One self-contained stack per directory (currently just `cloudflare/`), each with its own
+`providers.tf`/`variables.tf`/`*.tf` and a `terraform.tfvars.example`. Run `terraform`
+from within the stack dir — there is no root-level config tying stacks together, since
+they're unrelated infra (this isn't a Terragrunt-style monorepo). State and `*.tfvars` are
+gitignored and stay local; this is a single-maintainer homelab, so a remote backend would
+solve a concurrency problem that doesn't exist here. The provider token always comes from
+an environment variable the provider reads by default (e.g. `CLOUDFLARE_API_TOKEN`) —
+never a Terraform variable, so it can never end up in state or a committed file.
+
 ## Repo conventions
 
 - **Pin every image and chart.** No `:latest`. Look up the real current tag rather than
