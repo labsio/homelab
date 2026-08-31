@@ -29,6 +29,9 @@ k8s/              Kubernetes manifests
 ├── apps/            applications managed by Argo CD
 ├── monitoring/      Prometheus, Grafana, Loki, AlertManager
 └── argocd-apps/     Argo CD Application resources (app-of-apps)
+
+terraform/        Infra-as-code for anything outside the cluster
+└── cloudflare/   DNS records for thelabdesk.com
 ```
 
 Each subdirectory has its own README with setup instructions.
@@ -68,7 +71,6 @@ For now, the basics:
 ## What's next
 
 - SOPS + age for secret management — see [docs/secrets.md](docs/secrets.md)
-- Terraform for Cloudflare DNS (managed alongside the manifests)
 - Ansible playbooks for host bootstrap — single command to install
   k3s and base configuration on a fresh Proxmox VM
 - Migrate freshrss from Docker to k3s
