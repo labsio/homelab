@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: changedetection
+spec:
+  selector:
+    app: changedetection
+  ports:
+    - port: 80
+      targetPort: 5000
+      protocol: TCP
+---
+# ClusterIP only, no Ingress — playwright-chrome's control port has no authentication
+# (real Chrome instances, arbitrary JS execution), so it must never be reachable from
+# outside the cluster. The NetworkPolicy backs this up by only allowing traffic to it
+# from the changedetection pod specifically.
+apiVersion: v1
+kind: Service
+metadata:
+  name: playwright-chrome
+spec:
+  selector:
+    app: playwright-chrome
+  ports:
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP

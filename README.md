@@ -40,9 +40,8 @@ Each subdirectory has its own README with setup instructions.
 | caddy           | —                        | Docker         | Reverse proxy + TLS         |
 | freshrss        | `rss.${DOMAIN}`          | Docker         | RSS aggregator              |
 | rss-bridge      | — (internal)             | Docker         | Feed generator for freshrss |
-| changedetection | `watch.${DOMAIN}`        | Docker         | Website change monitoring   |
 | proxmox         | `proxmox.${DOMAIN}`      | Docker (proxy) | Hypervisor UI               |
-| linkding        | `linkding.k8s.${DOMAIN}` | k3s            | Bookmark manager            |
+| changedetection | `watch.k8s.${DOMAIN}`    | k3s            | Website change monitoring   |
 | grafana         | `grafana.k8s.${DOMAIN}`  | k3s            | Monitoring dashboards       |
 
 ## Monitoring
@@ -72,7 +71,7 @@ For now, the basics:
 - Terraform for Cloudflare DNS (managed alongside the manifests)
 - Ansible playbooks for host bootstrap — single command to install
   k3s and base configuration on a fresh Proxmox VM
-- Migrate freshrss and changedetection from Docker to k3s
+- Migrate freshrss from Docker to k3s
 - Harden the Docker stack as a clean reference for simpler self-hosting
 
 ## License

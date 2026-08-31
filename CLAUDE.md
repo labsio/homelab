@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 pre-commit run --all-files              # trailing-ws, eof, check-yaml, gitleaks, hadolint, yamllint
 yamllint -d relaxed .                   # exactly what CI runs on PRs
-kubectl kustomize k8s/apps/linkding     # render/validate a kustomization without a cluster
+kubectl kustomize k8s/apps/<name>       # render/validate a kustomization without a cluster
 
 # Validate a Compose service the way CI does (from services/<svc>/)
 cp .env.example .env && docker compose config --quiet
@@ -51,9 +51,10 @@ by hand.
 
 ### Sync policies are intentionally not uniform
 
-`root` and `linkding` are `automated` with `prune` + `selfHeal`. The monitoring
-Applications deliberately have **no** `automated` block (manual sync only) and use
-`ServerSideApply=true` for the large CRD-heavy charts. Don't "normalize" these.
+`root` is `automated` with `prune` + `selfHeal`, and new app `Application`s should default
+to the same. The monitoring Applications deliberately have **no** `automated` block (manual
+sync only) and use `ServerSideApply=true` for the large CRD-heavy charts. Don't "normalize"
+these.
 
 ### Patterns every k8s manifest follows
 
@@ -93,7 +94,7 @@ Each service is a self-contained folder: `README.md`, `docker-compose.yml`,
   DNS-01 so no inbound port 80 is needed.
 - Networking: an **external** `proxy_net` (`docker network create proxy_net`, created
   once, out of band) joins a service to Caddy; anything a service talks to privately gets
-  its own bridge network (`rss_net`, `changedetection_net`) and is *not* on `proxy_net`.
+  its own bridge network (e.g. `rss_net`) and is *not* on `proxy_net`.
 - Every service sets `restart: unless-stopped`, `deploy.resources.limits`, and
   json-file log rotation (`max-size: 10m`, `max-file: 3`).
 - Hostnames come from `${DOMAIN}` in the Caddyfile, not hardcoded — the opposite of the
@@ -106,10 +107,10 @@ Each service is a self-contained folder: `README.md`, `docker-compose.yml`,
 - **Pin every image and chart.** No `:latest`. Look up the real current tag rather than
   inventing one — some images don't use semver (`rssbridge/rss-bridge:sha-68539df`).
 - **Secrets are never committed.** They are created out-of-band with `kubectl create
-  secret` and referenced by name: `cloudflare-api-token` (cert-manager),
-  `linkding-credentials`, `grafana-admin`, `telegram-bot-token` (monitoring). The exact
-  commands live in the relevant README. `gitleaks` runs pre-commit. Encrypting Secrets in
-  git with SOPS + age is roadmap, not done.
+  secret` and referenced by name: `cloudflare-api-token` (cert-manager), `grafana-admin`,
+  `telegram-bot-token` (monitoring). The exact commands live in the relevant README.
+  `gitleaks` runs pre-commit. Encrypting Secrets in git with SOPS + age
+  (see [docs/secrets.md](docs/secrets.md)) is set up but not yet used for these.
 - This is a **public** repo: English only, no Cyrillic, no personal data beyond what is
   already there.
 - Every meaningful subdirectory has its own README with setup instructions — update it
