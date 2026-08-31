@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: changedetection
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: changedetection
+  template:
+    metadata:
+      labels:
+        app: changedetection
+    spec:
+      containers:
+        - name: changedetection
+          image: ghcr.io/dgtlmoon/changedetection.io:0.54.10
+          ports:
+            - containerPort: 5000
+          env:
+            - name: PLAYWRIGHT_DRIVER_URL
+              value: ws://playwright-chrome:3000
+          volumeMounts:
+            - name: data
+              mountPath: /datastore
+          # No HEALTHCHECK ships in the image and no shell utility to add one with, but
+          # httpGet probes are made by the kubelet against the pod's network directly, so
+          # they don't need anything inside the container.
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          securityContext:
+            # Verified empirically (not a guess): the image runs as root by default with
+            # no documented non-root mode, and writes /datastore as root. Forcing
+            # runAsNonRoot would break the write path, same class of issue linkding hit
+            # (fixed there with uid:33) — but no working non-root uid is documented here.
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: changedetection-data
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: playwright-chrome
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: playwright-chrome
+  template:
+    metadata:
+      labels:
+        app: playwright-chrome
+    spec:
+      containers:
+        - name: playwright-chrome
+          image: dgtlmoon/sockpuppetbrowser:0.0.3
+          ports:
+            - containerPort: 3000
+          env:
+            - name: SCREEN_WIDTH
+              value: "1920"
+            - name: SCREEN_HEIGHT
+              value: "1080"
+            - name: MAX_CONCURRENT_CHROME_PROCESSES
+              value: "5"
+          volumeMounts:
+            # Chrome's default /dev/shm is far too small in a container (crashes
+            # rendering under load) — an in-memory emptyDir replaces it.
+            - name: dshm
+              mountPath: /dev/shm
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          securityContext:
+            # Verified empirically: the image already runs as uid 1000 (chrome) by
+            # default, so this is a real constraint, not a guess.
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Gi

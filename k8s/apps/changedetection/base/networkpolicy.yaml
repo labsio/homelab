@@ -1,0 +1,51 @@
+# Mirrors the Docker Compose isolation this app used to have: playwright-chrome ran on
+# a private `changedetection_net` that only `changedetection` could reach, because its
+# control port has no authentication of its own. Default-deny ingress in this namespace,
+# then two narrow allows.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-to-changedetection
+spec:
+  podSelector:
+    matchLabels:
+      app: changedetection
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: traefik
+      ports:
+        - port: 5000
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-changedetection-to-playwright
+spec:
+  podSelector:
+    matchLabels:
+      app: playwright-chrome
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: changedetection
+      ports:
+        - port: 3000

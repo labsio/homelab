@@ -94,7 +94,7 @@ Each service is a self-contained folder: `README.md`, `docker-compose.yml`,
   DNS-01 so no inbound port 80 is needed.
 - Networking: an **external** `proxy_net` (`docker network create proxy_net`, created
   once, out of band) joins a service to Caddy; anything a service talks to privately gets
-  its own bridge network (`rss_net`, `changedetection_net`) and is *not* on `proxy_net`.
+  its own bridge network (e.g. `rss_net`) and is *not* on `proxy_net`.
 - Every service sets `restart: unless-stopped`, `deploy.resources.limits`, and
   json-file log rotation (`max-size: 10m`, `max-file: 3`).
 - Hostnames come from `${DOMAIN}` in the Caddyfile, not hardcoded — the opposite of the
