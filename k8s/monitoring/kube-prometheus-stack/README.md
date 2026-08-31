@@ -61,11 +61,17 @@ kubectl create secret generic grafana-admin \
   --from-literal=admin-user=admin \
   --from-literal=admin-password='<a-strong-password>'
 
-# Telegram bot token for AlertManager
+# Telegram bot token + chat id for AlertManager
 kubectl create secret generic telegram-bot-token \
   --namespace monitoring \
-  --from-literal=token='<bot-token>'
+  --from-literal=token='<bot-token>' \
+  --from-literal=chat-id='<chat-id>'
 ```
+
+`chat_id` isn't a credential on its own (the bot token is what authenticates), but it's a
+personal Telegram identifier that doesn't belong in a public repo's committed values
+either — it's mounted from this Secret via `chat_id_file`, the same way `bot_token_file`
+already worked.
 
 Migrating these to SOPS-encrypted `*.enc.yaml` Secrets is on the roadmap — see
 [../../../docs/secrets.md](../../../docs/secrets.md).

@@ -97,10 +97,13 @@ alertmanager:
     receivers:
       - name: "telegram"
         telegram_configs:
-          # Token mounted from the telegram-bot-token Secret; chat_id is set per
-          # cluster and is a placeholder here.
+          # Both mounted from the telegram-bot-token Secret — chat_id isn't
+          # a credential by itself, but it's a personal identifier that
+          # doesn't belong in a public repo either. chat_id_file is a real
+          # Alertmanager field (verified against v0.32.1's source, not
+          # assumed), so it gets the same treatment as bot_token_file.
           - bot_token_file: /etc/alertmanager/secrets/telegram-bot-token/token
-            chat_id: -1001234567890
+            chat_id_file: /etc/alertmanager/secrets/telegram-bot-token/chat-id
             parse_mode: HTML
             send_resolved: true
             message: |
