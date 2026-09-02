@@ -1,0 +1,38 @@
+# our-home does not run in the cluster. It is a systemd user service on the
+# node itself, listening on 127.0.0.1-agnostic :8000, and it owns a SQLite
+# database on local disk. Moving it into a pod would mean giving that database
+# a PVC and a migration, which buys nothing here -- the node and the cluster
+# are the same machine.
+#
+# So the Service has no selector, and an EndpointSlice points it at the node's
+# own address. Traefik then treats it like any other backend, which is what
+# lets it share the wildcard certificate and the ingress.
+apiVersion: v1
+kind: Service
+metadata:
+  name: our-home
+spec:
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      protocol: TCP
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: our-home
+  labels:
+    # This label is what binds the slice to the Service above; without it the
+    # Service stays endpoint-less and every request returns 503.
+    kubernetes.io/service-name: our-home
+addressType: IPv4
+ports:
+  - name: http
+    port: 8000
+    protocol: TCP
+endpoints:
+  - addresses:
+      - 192.168.100.11
+    conditions:
+      ready: true

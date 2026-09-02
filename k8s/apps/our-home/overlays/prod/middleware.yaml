@@ -1,0 +1,15 @@
+# The application behind this ingress has no authentication of its own, and it
+# accepts writes (ratings, manual field overrides) on unauthenticated POST
+# endpoints. Traefik supplies the missing front door.
+#
+# The credentials live in the `our-home-basic-auth` Secret, which is created
+# out-of-band with `kubectl create secret generic` and is deliberately not in
+# git -- see this app's README.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: basic-auth
+spec:
+  basicAuth:
+    secret: our-home-basic-auth
+    realm: our-home

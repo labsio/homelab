@@ -1,0 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Namespace-agnostic building blocks. The overlay adds the Namespace,
+# Certificate, Middleware and Ingress, because the host differs per environment.
+resources:
+  - service.yaml
