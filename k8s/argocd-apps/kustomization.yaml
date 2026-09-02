@@ -3,5 +3,6 @@ kind: Kustomization
 
 resources:
   - changedetection.yaml
+  - our-home.yaml
   - kube-prometheus-stack.yaml
   - loki-stack.yaml

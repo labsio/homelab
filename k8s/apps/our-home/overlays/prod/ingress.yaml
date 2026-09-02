@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: our-home
+  annotations:
+    # <namespace>-<middleware name>@kubernetescrd is Traefik's naming for a
+    # Middleware CRD. Getting this string wrong fails open -- the ingress still
+    # serves, just without authentication -- so it is worth checking after any
+    # rename that it still returns 401 without credentials.
+    traefik.ingress.kubernetes.io/router.middlewares: our-home-basic-auth@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - home.k8s.thelabdesk.com
+      secretName: wildcard-k8s-tls
+  rules:
+    - host: home.k8s.thelabdesk.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: our-home
+                port:
+                  number: 8000
