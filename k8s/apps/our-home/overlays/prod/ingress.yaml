@@ -12,10 +12,27 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
+        # Both names are one label under k8s.thelabdesk.com, so the existing
+        # wildcard certificate already covers them -- no second Certificate.
         - home.k8s.thelabdesk.com
+        - home-ts.k8s.thelabdesk.com
       secretName: wildcard-k8s-tls
   rules:
+    # From the house: DNS gives the node's LAN address.
     - host: home.k8s.thelabdesk.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: our-home
+                port:
+                  number: 8000
+    # From anywhere else: DNS gives the node's tailnet address instead. Same
+    # Traefik, same certificate, same basic-auth middleware -- only the route
+    # in differs, and it requires an authenticated tailnet device.
+    - host: home-ts.k8s.thelabdesk.com
       http:
         paths:
           - path: /
