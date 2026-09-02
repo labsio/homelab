@@ -46,6 +46,19 @@ curl -sk -o /dev/null -w '%{http_code}\n' https://home.k8s.thelabdesk.com/   # 4
 
 ## Exposure
 
-Nothing is port-forwarded on the router. `*.k8s.thelabdesk.com` resolves to a
-LAN address, so this name is reachable from the LAN, and from the tailnet only
-once a subnet router advertises `192.168.100.0/24`.
+Nothing is port-forwarded on the router, and nothing here is reachable from the
+open internet. There are two names for the same service:
+
+| Name | Resolves to | Reachable from |
+|---|---|---|
+| `home.k8s.thelabdesk.com` | `192.168.100.11` (LAN) | the house |
+| `home-ts.k8s.thelabdesk.com` | `100.80.110.100` (tailnet) | any authenticated tailnet device |
+
+The split is done in DNS, not here: an explicit record for `home-ts.k8s` beats
+the `*.k8s` wildcard. Both names hit the same Traefik, the same wildcard
+certificate and the same basic-auth middleware, so neither is a way around the
+password.
+
+The tailnet address is published in public DNS, which is harmless: `100.64.0.0/10`
+is CGNAT space and is unroutable from the internet, so the answer is only useful
+to a device already authorised on the tailnet.
